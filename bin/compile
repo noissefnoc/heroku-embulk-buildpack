@@ -33,7 +33,7 @@ setup_dirs() {
     export PATH="$BUILD_DIR/vendor/bin:$PATH"
 }
 
-header 'Welcom to heroku-embulk-buildpack!'
+header 'Welcome to heroku-embulk-buildpack!'
 
 log "Setting up paths ..."
 
