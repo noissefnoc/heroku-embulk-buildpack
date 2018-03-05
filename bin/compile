@@ -50,8 +50,8 @@ install_gems() {
     local install_dir=${1}
 
     log "Checking Gemfile..."
-    if [ -e "bundle_dir" ]; then
-        cd "bundle_dir"
+    if [ -e ${install_dir}/bundle_dir ]; then
+        cd ${install_dir}/bundle_dir
         embulk bundle
         log "Embulk bundle install done ..."
     else
@@ -98,7 +98,7 @@ export PATH=\$PATH:/app/vendor/bin" > ${BUILD_DIR}/.profile.d/path.sh
 fi
 
 section "Starting Gem Installation ..."
-install_gems ${BUILD_DIR}
+install_gems ${$BP_DIR}
 log "Starting Gem Installation done ..."
 
 header "DONE! Completed in $(($SECONDS - $START_TIME))s"
