@@ -59,7 +59,6 @@ install_gems() {
     fi
 }
 
-}
 setup_dirs() {
     export PATH="$BUILD_DIR/vendor/bin:$PATH"
 }
