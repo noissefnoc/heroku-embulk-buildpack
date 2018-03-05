@@ -19,15 +19,36 @@ BP_DIR=$(cd $(dirname ${0:-}); cd ../; pwd)
 
 source $BP_DIR/lib/common.sh
 
-# functions
-install_embulk() {
-    log "Downloading embulk jar ..."
-    curl --create-dirs -o $BUILD_DIR/vendor/bin/embulk -L "https://dl.embulk.org/embulk-latest.jar"
+# from heroku/java buildpack lib/common.sh
+# ref) https://github.com/heroku/heroku-buildpack-java
+install_jdk() {
+    local install_dir=${1}
+    log "Downloading and installing jdk ..."
 
-    log "Set executable parmission ..."
-    chmod +x $BUILD_DIR/vendor/bin/embulk
+    let start=$(nowms)
+    JVM_COMMON_BUILDPACK=${JVM_COMMON_BUILDPACK:-https://codon-buildpacks.s3.amazonaws.com/buildpacks/heroku/jvm-common.tgz}
+    mkdir -p /tmp/jvm-common
+    curl --retry 3 --silent --location $JVM_COMMON_BUILDPACK | tar xzm -C /tmp/jvm-common --strip-components=1
+    source /tmp/jvm-common/bin/util
+    source /tmp/jvm-common/bin/java
+    source /tmp/jvm-common/opt/jdbc.sh
+    mtime "jvm-common.install.time" "${start}"
+
+    let start=$(nowms)
+    install_java_with_overlay ${install_dir}
+    mtime "jvm.install.time" "${start}"
 }
 
+# functions
+install_embulk() {
+    local install_dir=${1}
+
+    log "Downloading embulk jar ..."
+    curl --create-dirs -o ${install_dir}/vendor/bin/embulk -L "https://dl.embulk.org/embulk-latest.jar"
+
+    log "Set executable parmission ..."
+    chmod +x ${install_dir}/vendor/bin/embulk
+}
 
 setup_dirs() {
     export PATH="$BUILD_DIR/vendor/bin:$PATH"
@@ -44,19 +65,23 @@ debug "BP_DIR: $BP_DIR"
 
 
 setup_dirs
+
+log "Starting jdk Installation ..."
+install_jdk ${BUILD_DIR}
+
 log "Starting embulk Installation ..."
-install_embulk
+install_embulk ${BUILD_DIR}
 
 # Create .profile.d folder
-mkdir -p $BUILD_DIR/.profile.d
+mkdir -p ${BUILD_DIR}/.profile.d
 
 # if no .profile.d/path.sh, create one
-if [ ! -f $BUILD_DIR/.profile.d/path.sh ]; then
+if [ ! -f ${BUILD_DIR}/.profile.d/path.sh ]; then
     log "Creating path.sh ..."
     echo "echo \"Updating PATH to include embulk ...\"
-export PATH=\$PATH:/app/vendor/bin" > $BUILD_DIR/.profile.d/path.sh
+export PATH=\$PATH:/app/vendor/bin" > ${BUILD_DIR}/.profile.d/path.sh
 
-    log "Generated $BUILD_DIR/.profile.d/path.sh to add embulk path"
+    log "Generated ${BUILD_DIR}/.profile.d/path.sh to add embulk path"
 fi
 
 header "DONE! COmpleted in $(($SECONDS - $START_TIME))s"
