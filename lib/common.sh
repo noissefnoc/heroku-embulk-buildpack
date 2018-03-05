@@ -6,6 +6,12 @@ header() {
   echo "" || true
 }
 
+alog() {
+  echo "" || true
+  echo -e "-----> $*" || true
+  echo "" || true
+}
+
 log() {
   echo -e "       $*"
 }

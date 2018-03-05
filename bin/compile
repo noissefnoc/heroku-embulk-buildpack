@@ -40,7 +40,7 @@ install_embulk() {
     local install_dir=${1}
 
     log "Downloading embulk jar ..."
-    curl --create-dirs -o ${install_dir}/vendor/bin/embulk -L "https://dl.embulk.org/embulk-latest.jar"
+    curl --create-dirs -o ${install_dir}/vendor/bin/embulk -L "https://dl.embulk.org/embulk-latest.jar" 2> /dev/null
 
     log "Set executable parmission ..."
     chmod +x ${install_dir}/vendor/bin/embulk
@@ -52,7 +52,7 @@ setup_dirs() {
 
 header 'Welcome to heroku-embulk-buildpack!'
 
-log "Setting up paths ..."
+alog "Setting up paths ..."
 
 debug "BUILD_DIR: $BUILD_DIR"
 debug "CACHE_DIR: $CACHE_DIR"
@@ -62,10 +62,10 @@ debug "BP_DIR: $BP_DIR"
 
 setup_dirs
 
-log "Starting jdk Installation ..."
+alog "Starting jdk Installation ..."
 install_jdk ${BUILD_DIR}
 
-log "Starting embulk Installation ..."
+alog "Starting embulk Installation ..."
 install_embulk ${BUILD_DIR}
 
 # Create .profile.d folder
@@ -73,13 +73,13 @@ mkdir -p ${BUILD_DIR}/.profile.d
 
 # if no .profile.d/path.sh, create one
 if [ ! -f ${BUILD_DIR}/.profile.d/path.sh ]; then
-    log "Creating path.sh ..."
+    alog "Creating path.sh ..."
     echo "echo \"Updating PATH to include embulk ...\"
 export PATH=\$PATH:/app/vendor/bin" > ${BUILD_DIR}/.profile.d/path.sh
 
-    log "Generated ${BUILD_DIR}/.profile.d/path.sh to add embulk path"
+    alog "Generated ${BUILD_DIR}/.profile.d/path.sh to add embulk path"
 fi
 
-header "DONE! COmpleted in $(($SECONDS - $START_TIME))s"
+header "DONE! Completed in $(($SECONDS - $START_TIME))s"
 
 exit 0
