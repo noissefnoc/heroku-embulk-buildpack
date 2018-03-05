@@ -6,8 +6,7 @@ header() {
   echo "" || true
 }
 
-alog() {
-  echo "" || true
+section() {
   echo -e "-----> $*" || true
 }
 
