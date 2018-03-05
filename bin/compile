@@ -98,7 +98,7 @@ export PATH=\$PATH:/app/vendor/bin" > ${BUILD_DIR}/.profile.d/path.sh
 fi
 
 section "Starting Gem Installation ..."
-install_gems ${$BP_DIR}
+install_gems ${BP_DIR}
 log "Starting Gem Installation done ..."
 
 header "DONE! Completed in $(($SECONDS - $START_TIME))s"
