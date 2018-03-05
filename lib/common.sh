@@ -9,7 +9,6 @@ header() {
 alog() {
   echo "" || true
   echo -e "-----> $*" || true
-  echo "" || true
 }
 
 log() {
